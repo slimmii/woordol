@@ -145,9 +145,9 @@ ${board}
   return (
     <div id="default-modal" className={`${hidden ? "hidden" :""} max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2`}>
       <div className="relative px-4 w-full max-w-2xl h-full md:h-auto">
-        <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-          <div className="flex justify-between items-start p-5 rounded-t border-b dark:border-gray-600">
-            <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl dark:text-white">
+        <div className="relative bg-white rounded-lg shadow ">
+          <div className="flex justify-between items-start p-5 rounded-t border-b ">
+            <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl ">
               Woordol
             </h3>
             <button onClick={() => { setHidden((hide) => { return !hide}) }} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="default-modal">
@@ -158,11 +158,9 @@ ${board}
 
           <div className="flex flex-row p-5 gap-5">
             <div className="flex-1 border-r-2">
-              <div className="text-white font-bold uppercase text-xl">Volgende</div>
-              <div className="text-white">{time}</div>
+              <div className="text-black font-bold uppercase text-xl">Volgende</div>
+              <div className="text-black">{time}</div>
             </div>
-
-            <div></div>
 
             <div className="flex-1">
             <button onClick={copy}className="bg-blue-500 flex flex-row hover:bg-blue-600 text-white font-bold py-2 px-4 rounded items-center justify-center w-36">
