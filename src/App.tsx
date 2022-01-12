@@ -100,7 +100,7 @@ const Keyboard = ({ onEnter, onLetter, onDelete }: { onEnter: () => void, onLett
 }
 
 const getTimeForNextWord = () => {
-  let next = moment.utc(moment.now()).add(1, 'days').set({ hour: 6, minute: 0, second: 0, millisecond: 0 });
+  let next = moment.utc(moment.now()).add(1, 'days').set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
   let diff = moment(moment.utc(moment.now()).diff(next));
   let moment1 = moment.utc(moment.now());
   let moment2 = next;
