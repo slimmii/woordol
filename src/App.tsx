@@ -13,8 +13,8 @@ interface LetterProps {
 
 const Letter = ({ letter }: LetterProps) => {
   return (
-    <div className={`${letter?.animation} flex w-14 h-14 border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
-      <p className="font-bold">{letter?.letter}</p>
+    <div className={`${letter?.animation} flex-1 flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
+      <p className="font-bold">{letter?.letter ?? "‎"}</p>
     </div>
   )
 }
@@ -205,23 +205,28 @@ const App = () => {
     const tries = currentGame.tries;
 
     return (
-      <div className="container max-w-md mx-auto flex justify-center flex-col items-stretch">
+      <div className="container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch">
 
-        <div className="flex flex-col justify-center items-center gap-4 p-10">
+        <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
           {tries.map((row, tryIdx) => {
-            return (<div key={"row_" + tryIdx} className="flex gap-4">
+            return (<div key={"row_" + tryIdx} className="flex flex-1 align-stretch max-h-16 gap-4 ">
               {row.map((letter, idx) => {
-
                 return <Letter key={tryIdx + "_" + (letter.letter ?? " ") + "_" + idx} animation='IDLE' letter={letter} />
               })}
             </div>)
           })}
+
+          
         </div>
 
-        <input type="text" onChange={(input) => {
-          dispatch(setCurrentWord(input.currentTarget.value.toUpperCase()));
-        }}></input>
+      
+        <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
+            {error &&  <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
+              {error}
+            </div>}
+        </div>
 
+        {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
         <Keyboard onEnter={async () => {
           dispatch(checkWord(currentWord));
         }} onLetter={(letter: string) => {
@@ -230,15 +235,6 @@ const App = () => {
           console.log(currentWord.slice(0, currentWord.length - 1));
           dispatch(setCurrentWord(currentWord.slice(0, currentWord.length - 1)));
         }} />
-
-        <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
-            {error &&  <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
-              {error}
-            </div>}
-        </div>
-
-        {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
-
       </div>
 
     );
