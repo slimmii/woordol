@@ -4,7 +4,7 @@ import answers from './answers.json'
 import seedrandom from 'seedrandom';
 import { RootState } from './store';
 
-export const TIME_ZERO = Date.UTC(2022, 0, 1, 6, 0, 0);
+export const TIME_ZERO = Date.UTC(2021, 11, 30, 0, 0, 0);
 
 export interface CurrentGame {
   currentTry: number,
