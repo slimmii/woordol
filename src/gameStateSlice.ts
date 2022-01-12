@@ -1,11 +1,10 @@
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { stat } from 'fs';
 import words from './5letterwords.json';
 import answers from './answers.json'
 import seedrandom from 'seedrandom';
 import { RootState } from './store';
 
-export const TIME_ZERO = Date.UTC(2022, 0, 11, 6, 0, 0);
+export const TIME_ZERO = Date.UTC(2022, 0, 1, 6, 0, 0);
 
 export interface CurrentGame {
   currentTry: number,
@@ -67,14 +66,14 @@ export const gameStateSlice = createSlice({
       }
     },
     loadGame: (state) => {
-      let randomAnswers = randomlyOrderArrayWithSeed(answers, "random");
       let currentGameIndex = getFullDaysBetween(TIME_ZERO, Date.now());
+
       state.error = undefined;
       if (!state.currentGame || state.currentGame.day < currentGameIndex) {
         state.currentGame = {
           currentTry: 0,
           day: currentGameIndex,
-          answer: randomAnswers[currentGameIndex].toUpperCase(),
+          answer: answers[currentGameIndex].toUpperCase(),
           state: "PLAYING",
           tries: [
             [{}, {}, {}, {}, {}],
