@@ -13,10 +13,27 @@ export interface CurrentGame {
   state: string,
   tries: LetterState[][]
 }
+/**
+ * averageGuesses: 1
+currentStreak: 1
+gamesPlayed: 1
+gamesWon: 1
+guesses: {1: 1, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, fail: 0}
+maxStreak: 1
+winPercentage: 100
+ */
+export interface Statistics {
+  currentStreak: number,
+  gamesPlayed: number,
+  gamesWon: number,
+  guesses: { [key: string]: number },
+  maxStreak: number,
+}
 
 export interface GameState {
   error?: string,
   keyboardLocked: boolean,
+  statistics: Statistics,
   currentGame?: CurrentGame
 }
 
@@ -28,9 +45,18 @@ export interface LetterState {
   evaluation?: "correct" | "present" | "absent" | "tbd"
 }
 
+const initialStatistics: Statistics = {
+  currentStreak: 0,
+  gamesPlayed: 0,
+  gamesWon: 0,
+  guesses: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "fail": 0 },
+  maxStreak: 0,
+};
+
 const initialState: GameState = {
   error: "",
   keyboardLocked: false,
+  statistics: initialStatistics,
   currentGame: undefined
 };
 
@@ -67,8 +93,10 @@ export const gameStateSlice = createSlice({
     },
     loadGame: (state) => {
       let currentGameIndex = getFullDaysBetween(TIME_ZERO, Date.now());
-
       state.error = undefined;
+      if (!state.statistics) {
+        state.statistics = initialStatistics;
+      }
       if (!state.currentGame || state.currentGame.day < currentGameIndex) {
         state.currentGame = {
           currentTry: 0,
@@ -108,12 +136,36 @@ export const gameStateSlice = createSlice({
 
         if (guessedWord === currentGame.answer) {
           currentGame.state = "WON";
+          
+          state.statistics = {
+            currentStreak: state.statistics.currentStreak + 1,
+            gamesPlayed: state.statistics?.gamesPlayed + 1,
+            gamesWon: state.statistics.gamesWon + 1,
+            guesses: {
+              ...state.statistics.guesses,
+              [currentGame.currentTry + 1]: state.statistics.guesses[currentGame.currentTry + 1] + 1,
+            },
+            maxStreak: state.statistics.currentStreak + 1,
+          }
+
+          
         } else if (currentGame.currentTry === 5) {
           currentGame.state = "LOST";
           state.error = "Helaas! Het woord was " + currentGame.answer;
-          return;
+
+          state.statistics = {
+            currentStreak: 0,
+            gamesPlayed: state.statistics?.gamesPlayed + 1,
+            gamesWon: state.statistics.gamesWon + 1,
+            guesses: {
+              ...state.statistics.guesses,
+              [currentGame.currentTry]: state.statistics.guesses[currentGame.currentTry] + 1,
+            },
+            maxStreak: state.statistics.currentStreak
+          }
+        } else {
+          currentGame.currentTry++;
         }
-        currentGame.currentTry++;
       }
 
     },
