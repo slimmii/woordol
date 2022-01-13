@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './App.css';
 import { checkWord, clearError, LetterState, loadGame, setCurrentWord, setKeyboardLock } from './gameStateSlice';
@@ -177,6 +177,8 @@ ${board}
 
 const App = () => {
   const dispatch = useDispatch();
+  let rootRef = useRef<HTMLDivElement>(null);
+  let keyboardLocked = useSelector((state: RootState) => state.gameState.keyboardLocked);
 
   let currentGame = useSelector((state: RootState) => state.gameState.currentGame);
   const error = useSelector((state: RootState) => state.gameState.error);
@@ -184,6 +186,7 @@ const App = () => {
   useEffect(() => {
     dispatch(setKeyboardLock(false));
     dispatch(loadGame());
+    rootRef.current?.focus();
   }, [])
 
   useEffect(() => {
@@ -203,7 +206,24 @@ const App = () => {
     const tries = currentGame.tries;
 
     return (
-      <div className="container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch">
+      <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => { 
+        // check if key is letter
+        if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+          if (!keyboardLocked) {
+            dispatch(setCurrentWord(currentWord + e.key.toUpperCase())) 
+          }
+        }
+        // check if key is enter
+        if (e.key === "Enter") {
+          dispatch(checkWord(currentWord));
+        }
+        // check if key is backspace
+        if (e.key === "Backspace") {
+          if (!keyboardLocked) {
+            dispatch(setCurrentWord(currentWord.slice(0, -1)))
+          }
+        }
+      }}>
 
         <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
           {tries.map((row, tryIdx) => {
