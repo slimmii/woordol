@@ -196,68 +196,67 @@ const App = () => {
     return () => clearTimeout(handle);
   }, [error]);
 
-  if (currentGame) {
-    const answer = currentGame.answer;
-    const currentTry = currentGame.currentTry;
-    const currentWord = currentGame.tries[currentGame.currentTry].map(letter => letter.letter).join("");
+  try {
+    if (currentGame) {
+      const currentWord = currentGame.tries[currentGame.currentTry].map(letter => letter.letter).join("");
 
-    const state = currentGame.state;
+      const tries = currentGame.tries;
 
-    const tries = currentGame.tries;
-
-    return (
-      <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => {
-        // check if key is letter
-        if (keyboardLocked || currentGame?.state === "WON" || currentGame?.state === "LOST") {
-          return;
-        }
-        if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
-          dispatch(setCurrentWord(currentWord + e.key.toUpperCase()))
-        }
-        // check if key is enter
-        if (e.key === "Enter") {
-          dispatch(checkWord(currentWord));
-        }
-        // check if key is backspace
-        if (e.key === "Backspace") {
-          dispatch(setCurrentWord(currentWord.slice(0, -1)))
-        }
-      }}>
-        <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
-          {tries.map((row, tryIdx) => {
-            return (<div key={"row_" + tryIdx} className="flex flex-1 align-stretch max-h-16 gap-4 ">
-              {row.map((letter, idx) => {
-                return <Letter key={tryIdx + "_" + (letter.letter ?? " ") + "_" + idx} animation='IDLE' letter={letter} />
-              })}
-            </div>)
-          })}
+      return (
+        <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => {
+          if (keyboardLocked || currentGame?.state === "WON" || currentGame?.state === "LOST") {
+            return;
+          }
+          // check if key is letter
+          if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+            dispatch(setCurrentWord(currentWord + e.key.toUpperCase()))
+          }
+          // check if key is enter
+          if (e.key === "Enter") {
+            dispatch(checkWord(currentWord));
+          }
+          // check if key is backspace
+          if (e.key === "Backspace") {
+            dispatch(setCurrentWord(currentWord.slice(0, -1)))
+          }
+        }}>
+          <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
+            {tries.map((row, tryIdx) => {
+              return (<div key={"row_" + tryIdx} className="flex flex-1 align-stretch max-h-16 gap-4 ">
+                {row.map((letter, idx) => {
+                  return <Letter key={tryIdx + "_" + (letter.letter ?? " ") + "_" + idx} animation='IDLE' letter={letter} />
+                })}
+              </div>)
+            })}
 
 
+          </div>
+
+
+          <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
+            {error && <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
+              {error}
+            </div>}
+          </div>
+
+          {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
+          <Keyboard onEnter={async () => {
+            dispatch(checkWord(currentWord));
+          }} onLetter={(letter: string) => {
+            dispatch(setCurrentWord(currentWord + letter.toUpperCase()));
+          }} onDelete={() => {
+            console.log(currentWord.slice(0, currentWord.length - 1));
+            dispatch(setCurrentWord(currentWord.slice(0, currentWord.length - 1)));
+          }} />
         </div>
 
-
-        <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
-          {error && <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
-            {error}
-          </div>}
-        </div>
-
-        {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
-        <Keyboard onEnter={async () => {
-          dispatch(checkWord(currentWord));
-        }} onLetter={(letter: string) => {
-          dispatch(setCurrentWord(currentWord + letter.toUpperCase()));
-        }} onDelete={() => {
-          console.log(currentWord.slice(0, currentWord.length - 1));
-          dispatch(setCurrentWord(currentWord.slice(0, currentWord.length - 1)));
-        }} />
-      </div>
-
-    );
-  } else {
-    return <div>Loading...</div>
+      );
+    } else {
+      return <div>Loading...</div>
+    }
+  } catch (e) {
+    return <div>error</div>
   }
-
 
 }
 
