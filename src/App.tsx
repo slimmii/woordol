@@ -123,7 +123,7 @@ const Modal = () => {
   const copy = () => {
 
 
-    let board = currentGame?.tries.slice(0, currentGame?.currentTry).map(tryItem => {
+    let board = currentGame?.tries.slice(0, currentGame?.guesses).map(tryItem => {
       return tryItem.map(letter => {
         if (letter.evaluation === "present") {
           return "🟨"
@@ -136,7 +136,7 @@ const Modal = () => {
     }).join("\n");
 
 
-    navigator.clipboard.writeText(`Woordol ${currentGame?.day} ${currentGame?.currentTry}/6
+    navigator.clipboard.writeText(`Woordol ${currentGame?.day} ${currentGame?.guesses}/6
     
 ${board}
 `);
@@ -225,7 +225,6 @@ const App = () => {
           }
         }
       }}>
-
         <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
           {tries.map((row, tryIdx) => {
             return (<div key={"row_" + tryIdx} className="flex flex-1 align-stretch max-h-16 gap-4 ">

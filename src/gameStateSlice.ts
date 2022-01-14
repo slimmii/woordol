@@ -8,6 +8,7 @@ export const TIME_ZERO = Date.UTC(2021, 11, 30, 0, 0, 0);
 
 export interface CurrentGame {
   currentTry: number,
+  guesses: number,
   day: number,
   answer: string,
   state: string,
@@ -100,6 +101,7 @@ export const gameStateSlice = createSlice({
       if (!state.currentGame || state.currentGame.day < currentGameIndex) {
         state.currentGame = {
           currentTry: 0,
+          guesses: 0,
           day: currentGameIndex,
           answer: answers[currentGameIndex].toUpperCase(),
           state: "PLAYING",
@@ -133,22 +135,19 @@ export const gameStateSlice = createSlice({
       let currentGame = state.currentGame;
       if (currentGame) {
         let guessedWord = currentGame.tries[currentGame.currentTry].map(letter => letter.letter).join("");
-
+        currentGame.guesses++;
         if (guessedWord === currentGame.answer) {
           currentGame.state = "WON";
-          
           state.statistics = {
             currentStreak: state.statistics.currentStreak + 1,
             gamesPlayed: state.statistics?.gamesPlayed + 1,
             gamesWon: state.statistics.gamesWon + 1,
             guesses: {
               ...state.statistics.guesses,
-              [currentGame.currentTry + 1]: state.statistics.guesses[currentGame.currentTry + 1] + 1,
+              [currentGame.guesses]: state.statistics.guesses[currentGame.guesses] + 1,
             },
             maxStreak: state.statistics.currentStreak + 1,
-          }
-
-          
+          } 
         } else if (currentGame.currentTry === 5) {
           currentGame.state = "LOST";
           state.error = "Helaas! Het woord was " + currentGame.answer;
@@ -156,10 +155,10 @@ export const gameStateSlice = createSlice({
           state.statistics = {
             currentStreak: 0,
             gamesPlayed: state.statistics?.gamesPlayed + 1,
-            gamesWon: state.statistics.gamesWon + 1,
+            gamesWon: state.statistics.gamesWon,
             guesses: {
               ...state.statistics.guesses,
-              [currentGame.currentTry]: state.statistics.guesses[currentGame.currentTry] + 1,
+              fail: state.statistics.guesses.fail + 1,
             },
             maxStreak: state.statistics.currentStreak
           }
