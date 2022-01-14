@@ -208,21 +208,19 @@ const App = () => {
     return (
       <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => {
         // check if key is letter
-        if (!keyboardLocked) {
-
-          if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
-            dispatch(setCurrentWord(currentWord + e.key.toUpperCase()))
-          }
-          // check if key is enter
-          if (e.key === "Enter") {
-            dispatch(checkWord(currentWord));
-          }
-          // check if key is backspace
-          if (e.key === "Backspace") {
-            if (!keyboardLocked) {
-              dispatch(setCurrentWord(currentWord.slice(0, -1)))
-            }
-          }
+        if (keyboardLocked || currentGame?.state === "WON" || currentGame?.state === "LOST") {
+          return;
+        }
+        if (e.key.length === 1 && e.key.match(/[a-z]/i)) {
+          dispatch(setCurrentWord(currentWord + e.key.toUpperCase()))
+        }
+        // check if key is enter
+        if (e.key === "Enter") {
+          dispatch(checkWord(currentWord));
+        }
+        // check if key is backspace
+        if (e.key === "Backspace") {
+          dispatch(setCurrentWord(currentWord.slice(0, -1)))
         }
       }}>
         <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
