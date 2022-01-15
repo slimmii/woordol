@@ -1,6 +1,6 @@
 
 .flipin {
-  animation: FlipIn 250ms ease-in;
+  animation: FlipIn 150ms ease-in;
 }
 
 @keyframes FlipIn {
@@ -15,7 +15,7 @@
 
 
 .flipout {
-  animation: FlipOut 250ms ease-in;
+  animation: FlipOut 150ms ease-in;
 }
 
 @keyframes FlipOut {

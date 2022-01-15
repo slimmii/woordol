@@ -192,10 +192,10 @@ export const checkWord = (currentWord: string) => async (dispatch: Dispatch) => 
   if (currentWord.length == 5 && [...words, ...answers].map((word) => word.toUpperCase()).includes(currentWord.toUpperCase())) {
     for (let i = 0; i < 5; i++) {
       dispatch(updateLetterAnimation({ index: i, animation: "flipin" }));
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise(resolve => setTimeout(resolve, 150));
       dispatch(checkLetter(i));
       dispatch(updateLetterAnimation({ index: i, animation: "flipout" }));
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise(resolve => setTimeout(resolve, 150));
     }
     dispatch(checkIfWonAndIncrease());
   } else {

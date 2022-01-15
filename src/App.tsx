@@ -13,8 +13,10 @@ interface LetterProps {
 
 const Letter = ({ letter }: LetterProps) => {
   return (
-    <div className={`${letter?.animation} flex-1 flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
+    <div className={`${letter?.animation} flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
+      <div className="flex justify-center items-center" style={{height: '11vw', width: '11vw', maxWidth: '3.5rem', maxHeight: '3.5rem'}}>
       <p className="font-bold">{letter?.letter ?? "‎"}</p>
+      </div>
     </div>
   )
 }
@@ -222,7 +224,7 @@ const App = () => {
         }}>
           <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
             {tries.map((row, tryIdx) => {
-              return (<div key={"row_" + tryIdx} className="flex flex-1 align-stretch max-h-16 gap-4 ">
+              return (<div key={"row_" + tryIdx} className="flex align-center justify-center max-h-16 gap-4 ">
                 {row.map((letter, idx) => {
                   return <Letter key={tryIdx + "_" + (letter.letter ?? " ") + "_" + idx} animation='IDLE' letter={letter} />
                 })}
