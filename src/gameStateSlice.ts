@@ -252,7 +252,7 @@ export const checkWord = (word: string, answer: string) => async (dispatch: Disp
 
   let evaluations = evaluateWord(word, answer);
 
-  if (word.length == 5) {
+  if (word.length == 5 && [...words, ...answers].map((word) => word.toUpperCase()).includes(word.toUpperCase())) {
     for (let i = 0; i < 5; i++) {
       dispatch(updateLetterAnimation({ index: i, animation: "flipin" }));
       await new Promise(resolve => setTimeout(resolve, 150));
