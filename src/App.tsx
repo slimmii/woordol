@@ -22,7 +22,33 @@ const isMobile = () =>  {
  }
 } 
 
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
+
+export function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}
+
+
 const Letter = ({ letter }: LetterProps) => {
+  const { height, width } = useWindowDimensions();
+
   return (
     <div className={`${letter?.animation} flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
       <div className="flex justify-center items-center" style={{ height: '11vw', width: '11vw', maxWidth: '3.5rem', maxHeight: '3.5rem' }}>
@@ -258,7 +284,7 @@ const App = () => {
       const tries = currentGame.tries;
 
       return (
-        <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-center flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => {
+        <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-end flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => {
           if (keyboardLocked || currentGame?.state === "WON" || currentGame?.state === "LOST") {
             return;
           }
