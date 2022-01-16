@@ -4,6 +4,9 @@ import answers from './answers.json'
 import seedrandom from 'seedrandom';
 import { RootState } from './store';
 
+
+
+
 export const TIME_ZERO = Date.UTC(2021, 11, 30, 0, 0, 0);
 
 export interface CurrentGame {
@@ -79,17 +82,29 @@ export const gameStateSlice = createSlice({
   reducers: {
     checkLetter: (state, action: PayloadAction<number>) => {
       let currentGame = state.currentGame;
+      let letterIndex = action.payload;
       if (currentGame) {
-        let currentLetter = currentGame.tries[currentGame.currentTry][action.payload].letter;
-        if (currentLetter) {
-          if (currentLetter === currentGame.answer[action.payload]) {
-            currentGame.tries[currentGame.currentTry][action.payload].evaluation = "correct";
-          } else if (currentGame.answer.includes(currentLetter)) {
-            currentGame.tries[currentGame.currentTry][action.payload].evaluation = "present";
-          } else {
-            currentGame.tries[currentGame.currentTry][action.payload].evaluation = "absent";
-          }
+        let currentLetter : string = currentGame.tries[currentGame.currentTry][action.payload].letter!;
+
+        let idx = currentGame.answer.indexOf(currentLetter);
+
+        if (idx === -1) {
+          currentGame.tries[currentGame.currentTry][action.payload].evaluation = "absent";
         }
+        if (idx === letterIndex) {
+          currentGame.tries[currentGame.currentTry][action.payload].evaluation = "correct";
+        }
+        if (idx !== letterIndex && idx !== -1) {
+          currentGame.tries[currentGame.currentTry][action.payload].evaluation = "present";
+        }
+        
+      
+      }
+    },
+    setLetterState: (state, action: PayloadAction<{index: number, letterState: LetterState}>) => {
+      let currentGame = state.currentGame;
+      if (currentGame) {
+        currentGame.tries[currentGame.currentTry][action.payload.index] = action.payload.letterState
       }
     },
     loadGame: (state) => {
@@ -181,19 +196,67 @@ export const gameStateSlice = createSlice({
   }
 });
 
-export const { setKeyboardLock, loadGame, checkLetter, setCurrentWord, updateLetterAnimation, checkIfWonAndIncrease, setError,clearError } = gameStateSlice.actions;
+export const { setLetterState, setKeyboardLock, loadGame, checkLetter, setCurrentWord, updateLetterAnimation, checkIfWonAndIncrease, setError,clearError } = gameStateSlice.actions;
 
 
 export const currentGameSelector = (state: RootState) => state.gameState.currentGame;
 
+export const evaluateWord = (word: string, answer: string) => {
+  let evaluations = word.split("").map((letter) : LetterState => {
+    return {
+      evaluation: "tbd",
+      letter: letter
+    }
+  });
 
-export const checkWord = (currentWord: string) => async (dispatch: Dispatch) => {
+  let remainingLetters = answer.split("").map(l => {
+    return {
+      letter: l,
+      checked: false
+    }
+  });
+
+  for (let i=0;i<word.length;i++) {
+    let idx = answer.indexOf(word[i],i);
+    if (idx == i) {
+      evaluations[i].evaluation = "correct";
+      remainingLetters[i].checked = true;
+    }
+  }
+
+
+  // Find the present spots
+  for (let i=0;i<word.length;i++) {
+    let uncheckedLetters = remainingLetters.filter(e => !e.checked);
+    let idx = uncheckedLetters.findIndex(l => l.letter === word[i]);
+    if (idx != -1 && evaluations[i].evaluation === "tbd") {
+      evaluations[i].evaluation = "present"
+      uncheckedLetters[idx].checked = true;
+    }
+  }
+
+  evaluations = evaluations.map((e, idx) => {
+    if (e.evaluation == "tbd") {
+      e.evaluation = "absent"
+    }
+    e.letter = word[idx];
+    return e;
+  });
+  return evaluations;
+}
+
+console.log(evaluateWord("TATA","SAAT"));
+
+export const checkWord = (word: string, answer: string) => async (dispatch: Dispatch) => {
   dispatch(setKeyboardLock(true));
-  if (currentWord.length == 5 && [...words, ...answers].map((word) => word.toUpperCase()).includes(currentWord.toUpperCase())) {
+
+  let evaluations = evaluateWord(word, answer);
+
+  if (word.length == 5) {
     for (let i = 0; i < 5; i++) {
       dispatch(updateLetterAnimation({ index: i, animation: "flipin" }));
       await new Promise(resolve => setTimeout(resolve, 150));
-      dispatch(checkLetter(i));
+      dispatch(setLetterState({index: i, letterState: evaluations[i]}));
       dispatch(updateLetterAnimation({ index: i, animation: "flipout" }));
       await new Promise(resolve => setTimeout(resolve, 150));
     }
@@ -207,9 +270,9 @@ export const checkWord = (currentWord: string) => async (dispatch: Dispatch) => 
       dispatch(updateLetterAnimation({ index: i, animation: "none" }));
     }
 
-    if (currentWord.length != 5) {
+    if (word.length != 5) {
       dispatch(setError("Het woord moet 5 letters lang zijn"));
-    } else if (!words.map((word) => word.toUpperCase()).includes(currentWord.toUpperCase())) {
+    } else if (!words.map((word) => word.toUpperCase()).includes(word.toUpperCase())) {
       dispatch(setError("Het woord is niet gevonden!"));
     }
   }

@@ -201,6 +201,7 @@ const App = () => {
   try {
     if (currentGame) {
       const currentWord = currentGame.tries[currentGame.currentTry].map(letter => letter.letter).join("");
+      const answer = currentGame.answer;
 
       const tries = currentGame.tries;
 
@@ -215,7 +216,7 @@ const App = () => {
           }
           // check if key is enter
           if (e.key === "Enter") {
-            dispatch(checkWord(currentWord));
+            dispatch(checkWord(currentWord, answer));
           }
           // check if key is backspace
           if (e.key === "Backspace") {
@@ -243,7 +244,7 @@ const App = () => {
 
           {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
           <Keyboard onEnter={async () => {
-            dispatch(checkWord(currentWord));
+            dispatch(checkWord(currentWord, answer));
           }} onLetter={(letter: string) => {
             dispatch(setCurrentWord(currentWord + letter.toUpperCase()));
           }} onDelete={() => {
