@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './App.css';
-import { checkWord, clearError, LetterState, loadGame, setCurrentWord, setKeyboardLock } from './gameStateSlice';
+import { checkWord, clearError, LetterState, loadGame, setCurrentWord, setError, setKeyboardLock } from './gameStateSlice';
 import { RootState } from './store';
 
 
@@ -14,8 +14,8 @@ interface LetterProps {
 const Letter = ({ letter }: LetterProps) => {
   return (
     <div className={`${letter?.animation} flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
-      <div className="flex justify-center items-center" style={{height: '11vw', width: '11vw', maxWidth: '3.5rem', maxHeight: '3.5rem'}}>
-      <p className="font-bold">{letter?.letter ?? "‎"}</p>
+      <div className="flex justify-center items-center" style={{ height: '11vw', width: '11vw', maxWidth: '3.5rem', maxHeight: '3.5rem' }}>
+        <p className="font-bold">{letter?.letter ?? "‎"}</p>
       </div>
     </div>
   )
@@ -113,6 +113,8 @@ const getTimeForNextWord = () => {
 const Modal = () => {
   const [time, setTime] = useState(getTimeForNextWord());
   const [hidden, setHidden] = useState(false);
+  const dispatch = useDispatch();
+
   let currentGame = useSelector((state: RootState) => state.gameState.currentGame);
 
   useEffect(() => {
@@ -122,7 +124,7 @@ const Modal = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const copy = () => {
+  const copy = async () => {
 
 
     let board = currentGame?.tries.slice(0, currentGame?.guesses).map(tryItem => {
@@ -138,10 +140,21 @@ const Modal = () => {
     }).join("\n");
 
 
-    navigator.clipboard.writeText(`Woordol ${currentGame?.day} ${currentGame?.guesses}/6
+    let shareText = `Woordol ${currentGame?.day} ${currentGame?.guesses}/6
     
 ${board}
-`);
+`;
+    try {
+      const shareData = {
+        title: 'Woordol',
+        text: shareText
+      }
+      await navigator.share(shareData);
+    } catch (e) {
+      await navigator.clipboard.writeText(shareText);
+      
+      dispatch(setError("Tekst gedeeld op clipboard"));
+    }
   }
 
   return (
@@ -236,13 +249,15 @@ const App = () => {
           </div>
 
 
+
+
+          {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
+
           <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
             {error && <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
               {error}
             </div>}
           </div>
-
-          {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
           <Keyboard onEnter={async () => {
             dispatch(checkWord(currentWord, answer));
           }} onLetter={(letter: string) => {
