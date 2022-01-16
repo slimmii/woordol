@@ -11,6 +11,17 @@ interface LetterProps {
   animation: string
 }
 
+const isMobile = () =>  {
+  // credit to Timothy Huang for this regex test: 
+  // https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3
+  if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+      return true
+ }
+ else{
+      return false
+ }
+} 
+
 const Letter = ({ letter }: LetterProps) => {
   return (
     <div className={`${letter?.animation} flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
@@ -146,17 +157,19 @@ const Modal = () => {
     
 ${board}
 `;
-    try {
+
+    if (isMobile()) {
       const shareData = {
         title: 'Woordol',
         text: shareText
       }
       await navigator.share(shareData);
-    } catch (e) {
+    } else {
       await navigator.clipboard.writeText(shareText);
       
       dispatch(setError("Tekst gedeeld op clipboard"));
     }
+
   }
 
   return (
