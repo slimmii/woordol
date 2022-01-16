@@ -245,7 +245,7 @@ export const evaluateWord = (word: string, answer: string) => {
   return evaluations;
 }
 
-console.log(evaluateWord("TATA","SAAT"));
+console.log(evaluateWord("GERTA","GEERT"));
 
 export const checkWord = (word: string, answer: string) => async (dispatch: Dispatch) => {
   dispatch(setKeyboardLock(true));
