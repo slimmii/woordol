@@ -301,7 +301,7 @@ const App = () => {
             dispatch(setCurrentWord(currentWord.slice(0, -1)))
           }
         }}>
-          <div className="flex flex-1 flex-col justify-center items-stretch gap-4 p-10">
+          <div className="flex flex-1 flex-col justify-center items-stretch gap-4">
             {tries.map((row, tryIdx) => {
               return (<div key={"row_" + tryIdx} className="flex align-center justify-center max-h-16 gap-4 ">
                 {row.map((letter, idx) => {
