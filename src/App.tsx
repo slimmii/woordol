@@ -71,6 +71,7 @@ const KeyboardButton = ({ char, onLetter }: { char: string, onLetter: (letter: s
 
   let correctLetters: string[] = [];
   let absentLetters: string[] = [];
+  let presentLetters: string[] = [];
 
   if (tries) {
     correctLetters = tries.flatMap((t) => {
@@ -79,6 +80,9 @@ const KeyboardButton = ({ char, onLetter }: { char: string, onLetter: (letter: s
     absentLetters = tries.flatMap((t) => {
       return t.filter(l => l.evaluation === "absent")
     }).map(letter => letter.letter!);
+    presentLetters = tries.flatMap((t) => {
+      return t.filter(l => l.evaluation === "present")
+    }).map(letter => letter.letter!);
   }
   let color = "bg-gray-400";
   if (correctLetters.includes(char)) {
@@ -86,6 +90,9 @@ const KeyboardButton = ({ char, onLetter }: { char: string, onLetter: (letter: s
   }
   if (absentLetters.includes(char)) {
     color = "bg-gray-600";
+  }
+  if (presentLetters.includes(char)) { 
+    color = "bg-yellow-400";
   }
   return <button className={`w-8 h-12 p-1  ${color} rounded-md text-white font-bold`} onClick={() => { onLetter(char) }}>{char}</button>;
 }
