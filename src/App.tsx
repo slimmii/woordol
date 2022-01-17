@@ -1,3 +1,4 @@
+import { stat } from 'fs';
 import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -163,6 +164,11 @@ const Modal = () => {
   let statistics = useSelector((state: RootState) => state.gameState.statistics);
 
 
+  let sum = Object.values(statistics.guesses).reduce((p,c) => p+c,0);
+  sum = 10;
+
+  let max = Math.max(...Object.values(statistics.guesses));
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(getTimeForNextWord());
@@ -240,6 +246,23 @@ ${board}
                 <div className="flex justify-center items-center text-xs">Max Streak</div>
               </div>
             </div>
+          </div>
+
+
+          <div className="p-2 m-4">
+            {Object.entries(statistics.guesses).filter(([k,v]) => k != 'fail').map(([k,v] : any) => {
+              return (
+              <div className= "flex flex-row m-1">
+                <div className="w-8 font-light text-sm">{k}</div>
+                <div className="flex-1 flex items-center">
+                  <div className="flex p-1 text-white font-bold justify-end bg-blue-600" style={{fontSize: 10, width: `${v / max * 100}%`, height: "100%"}}>
+                    {v}
+                  </div>
+                </div>
+              </div>
+              );
+            })}
+            
           </div>
 
 
