@@ -157,7 +157,64 @@ const getTimeForNextWord = () => {
   return moment.utc(duration.asMilliseconds()).format("HH:mm:ss");
 }
 
-const Modal = ({showStats} : { showStats : (show: boolean) => void }) => {
+const HelpModal = ({showHelp} : { showHelp : (show: boolean) => void }) => {
+  return (
+    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2 transition duration-500 ease-in-out`}>
+      <div className="relative px-4 w-full max-w-2xl h-full md:h-auto">
+        <div className="relative bg-white rounded-lg p-4">
+          <div className="flex justify-between items-start p-5 rounded-t">
+            <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl ">
+            </h3>
+            <button onClick={() => { showHelp(false) }} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="default-modal">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+            </button>
+          </div>
+
+          <p className="mb-2">Raad de <b>WOORDOL</b> in 6 pogingen.</p>
+
+          <p className="mb-2">Elke poging moet een bestaand 5 letter woord zijn. Druk op enter om het woord te controleren.</p>
+
+          <p className="mb-2">Na elke poging zal de kleur van de vakken aangepast worden om aan te geven hoe goed jouw gok was.</p>
+
+          <div className="flex flex-row gap-2">
+            <Letter letter={{letter: 'R', animation: 'none', evaluation: 'correct'}} animation=""></Letter>
+            <Letter letter={{letter: 'E', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'C', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'H', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'T', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+
+          </div>
+
+          <p className="mt-2 mb-2">De letter R is in het woord en op de juiste plaats.</p>
+
+          <div className="flex flex-row gap-2">
+            <Letter letter={{letter: 'B', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'E', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'V', animation: 'none', evaluation: 'present'}} animation=""></Letter>
+            <Letter letter={{letter: 'E', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'R', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+
+          </div>
+
+          <p className="mt-2 mb-2">De letter V is in het woord maar niet op de juiste plaats.</p>
+
+          <div className="flex flex-row gap-2">
+            <Letter letter={{letter: 'S', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'T', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'E', animation: 'none', evaluation: 'absent'}} animation=""></Letter>
+            <Letter letter={{letter: 'R', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+            <Letter letter={{letter: 'K', animation: 'none', evaluation: 'tbd'}} animation=""></Letter>
+
+          </div>
+
+          <p className="mt-2 mb-2">De letter E komt niet in het woord voor.</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const StatsModal = ({showStats} : { showStats : (show: boolean) => void }) => {
   const [time, setTime] = useState(getTimeForNextWord());
   const dispatch = useDispatch();
 
@@ -213,7 +270,7 @@ ${board}
   }
 
   return (
-    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2`}>
+    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2 transition duration-500 ease-in-out`}>
       <div className="relative px-4 w-full max-w-2xl h-full md:h-auto">
         <div className="relative bg-white rounded-lg shadow ">
           <div className="flex justify-between items-start p-5 rounded-t border-b ">
@@ -235,7 +292,7 @@ ${board}
                 <div className="flex justify-center items-center text-xs">Played</div>
               </div>
               <div className="flex-1">
-                <div className="flex justify-center items-center text-xl font-bold">{Math.floor((statistics.gamesWon / statistics.gamesPlayed) * 100)}%</div>
+                <div className="flex justify-center items-center text-xl font-bold">{statistics.gamesPlayed != 0 ? Math.floor((statistics.gamesWon / statistics.gamesPlayed) * 100) : 0}%</div>
                 <div className="flex justify-center items-center text-xs">Win</div>
               </div>
               <div className="flex-1">
@@ -291,6 +348,8 @@ const App = () => {
   let rootRef = useRef<HTMLDivElement>(null);
   let keyboardLocked = useSelector((state: RootState) => state.gameState.keyboardLocked);
   const [showStats, setShowStats] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
   let currentGame = useSelector((state: RootState) => state.gameState.currentGame);
   const error = useSelector((state: RootState) => state.gameState.error);
 
@@ -341,11 +400,11 @@ const App = () => {
           }
         }}>
           <div className="h-12 min-h-max flex justify-center items-center font-bold text-xl">
-            <div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+            <div className="ml-2"><svg onClick={() => { setShowHelp(true); }} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
               <path fill="var(--color-tone-3)" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
             </svg></div>
             <div className="flex flex-1 justify-center items-center ">🇧🇪 WOORDOL 🇧🇪 </div>
-            <div>
+            <div className="mr-2">
               <svg onClick={() => { setShowStats(true); }} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path fill="var(--color-tone-3)" d="M16,11V3H8v6H2v12h20V11H16z M10,5h4v14h-4V5z M4,11h4v8H4V11z M20,19h-4v-6h4V19z"></path>
               </svg>
@@ -368,7 +427,9 @@ const App = () => {
 
 
 
-          {showStats && <Modal showStats={ (show: boolean) => setShowStats(show)} />}
+          {showStats && <StatsModal showStats={ (show: boolean) => setShowStats(show)} />}
+          {showHelp && <HelpModal showHelp={ (show: boolean) => setShowHelp(show)} />}
+
 
           <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
             {error && <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
