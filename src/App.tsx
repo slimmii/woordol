@@ -12,16 +12,16 @@ interface LetterProps {
   animation: string
 }
 
-const isMobile = () =>  {
+const isMobile = () => {
   // credit to Timothy Huang for this regex test: 
   // https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3
-  if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-      return true
- }
- else{
-      return false
- }
-} 
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    return true
+  }
+  else {
+    return false
+  }
+}
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -50,9 +50,11 @@ export function useWindowDimensions() {
 const Letter = ({ letter }: LetterProps) => {
   const { height, width } = useWindowDimensions();
 
+  let size = Math.min((height - 160) / 11, (width - 160) / 4);
+
   return (
     <div className={`${letter?.animation} flex border-2 border-gray-150 justify-center items-center ${letter?.evaluation === "correct" ? "bg-green-400 border-green-600 text-white animate-wiggle" : ""} ${letter?.evaluation === "present" ? "bg-yellow-400 border-yellow-600 text-white" : ""} ${letter?.evaluation === "absent" ? "bg-gray-400 border-gray-600 text-white" : ""}`}>
-      <div className="flex justify-center items-center" style={{ height: '11vw', width: '11vw', maxWidth: '3.5rem', maxHeight: '3.5rem' }}>
+      <div className="flex justify-center items-center" style={{ height: size, width: size, maxWidth: '3.5rem', maxHeight: '3.5rem' }}>
         <p className="font-bold">{letter?.letter ?? "‎"}</p>
       </div>
     </div>
@@ -92,7 +94,7 @@ const KeyboardButton = ({ char, onLetter }: { char: string, onLetter: (letter: s
   if (absentLetters.includes(char)) {
     color = "bg-gray-600";
   }
-  if (presentLetters.includes(char)) { 
+  if (presentLetters.includes(char)) {
     color = "bg-yellow-400";
   }
   return <button className={`w-8 h-12 p-1  ${color} rounded-md text-white font-bold`} onClick={() => { onLetter(char) }}>{char}</button>;
@@ -103,7 +105,7 @@ const Keyboard = ({ onEnter, onLetter, onDelete }: { onEnter: () => void, onLett
   let state = useSelector((state: RootState) => state.gameState.currentGame?.state);
 
   return (
-    <div className={`flex flex-col p-2 gap-2 keyboardLocked ${keyboardLocked || state === "WON" || state === "LOST" ? "pointer-events-none" : ""}`}>
+    <div className={`flex flex-col m-2 gap-2 keyboardLocked ${keyboardLocked || state === "WON" || state === "LOST" ? "pointer-events-none" : ""}`}>
       <div className="flex flex-1 gap-2 justify-center">
         <KeyboardButton char="Q" onLetter={onLetter} />
         <KeyboardButton char="W" onLetter={onLetter} />
@@ -155,16 +157,15 @@ const getTimeForNextWord = () => {
   return moment.utc(duration.asMilliseconds()).format("HH:mm:ss");
 }
 
-const Modal = () => {
+const Modal = ({showStats} : { showStats : (show: boolean) => void }) => {
   const [time, setTime] = useState(getTimeForNextWord());
-  const [hidden, setHidden] = useState(false);
   const dispatch = useDispatch();
 
   let currentGame = useSelector((state: RootState) => state.gameState.currentGame);
   let statistics = useSelector((state: RootState) => state.gameState.statistics);
 
 
-  let sum = Object.values(statistics.guesses).reduce((p,c) => p+c,0);
+  let sum = Object.values(statistics.guesses).reduce((p, c) => p + c, 0);
   sum = 10;
 
   let max = Math.max(...Object.values(statistics.guesses));
@@ -205,21 +206,21 @@ ${board}
       await navigator.share(shareData);
     } else {
       await navigator.clipboard.writeText(shareText);
-      
+
       dispatch(setError("Tekst gedeeld op clipboard"));
     }
 
   }
 
   return (
-    <div id="default-modal" className={`${hidden ? "hidden" : ""} max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2`}>
+    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2`}>
       <div className="relative px-4 w-full max-w-2xl h-full md:h-auto">
         <div className="relative bg-white rounded-lg shadow ">
           <div className="flex justify-between items-start p-5 rounded-t border-b ">
             <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl ">
               Woordol
             </h3>
-            <button onClick={() => { setHidden((hide) => { return !hide }) }} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="default-modal">
+            <button onClick={() => { showStats(false) }} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="default-modal">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
             </button>
           </div>
@@ -234,7 +235,7 @@ ${board}
                 <div className="flex justify-center items-center text-xs">Played</div>
               </div>
               <div className="flex-1">
-                <div className="flex justify-center items-center text-xl font-bold">{Math.floor((statistics.gamesWon/statistics.gamesPlayed)*100)}%</div>
+                <div className="flex justify-center items-center text-xl font-bold">{Math.floor((statistics.gamesWon / statistics.gamesPlayed) * 100)}%</div>
                 <div className="flex justify-center items-center text-xs">Win</div>
               </div>
               <div className="flex-1">
@@ -250,19 +251,19 @@ ${board}
 
 
           <div className="p-2 m-4">
-            {Object.entries(statistics.guesses).filter(([k,v]) => k != 'fail').map(([k,v] : any) => {
+            {Object.entries(statistics.guesses).filter(([k, v]) => k != 'fail').map(([k, v]: any) => {
               return (
-              <div className= "flex flex-row m-1">
-                <div className="w-8 font-light text-sm">{k}</div>
-                <div className="flex-1 flex items-center">
-                  <div className="flex p-1 text-white font-bold justify-end bg-blue-600" style={{fontSize: 10, width: `${v / max * 100}%`, height: "100%"}}>
-                    {v}
+                <div className="flex flex-row m-1">
+                  <div className="w-8 font-light text-sm">{k}</div>
+                  <div className="flex-1 flex items-center">
+                    <div className="flex p-1 text-white font-bold justify-end bg-blue-600" style={{ fontSize: 10, width: `${v / max * 100}%`, height: "100%" }}>
+                      {v}
+                    </div>
                   </div>
                 </div>
-              </div>
               );
             })}
-            
+
           </div>
 
 
@@ -289,7 +290,7 @@ const App = () => {
   const dispatch = useDispatch();
   let rootRef = useRef<HTMLDivElement>(null);
   let keyboardLocked = useSelector((state: RootState) => state.gameState.keyboardLocked);
-
+  const [showStats, setShowStats] = useState(false);
   let currentGame = useSelector((state: RootState) => state.gameState.currentGame);
   const error = useSelector((state: RootState) => state.gameState.error);
 
@@ -305,6 +306,14 @@ const App = () => {
     }, 1500)
     return () => clearTimeout(handle);
   }, [error]);
+
+  useEffect(() => {
+    if (currentGame) {
+      if (currentGame.state == "WON" || currentGame.state === "LOST") {
+        setShowStats(true)
+      }
+    }
+  }, [currentGame?.state]);
 
   try {
     if (currentGame) {
@@ -331,9 +340,22 @@ const App = () => {
             dispatch(setCurrentWord(currentWord.slice(0, -1)))
           }
         }}>
-          <div className="flex flex-1 flex-col justify-center items-stretch gap-4">
+          <div className="h-12 min-h-max flex justify-center items-center font-bold text-xl">
+            <div><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+              <path fill="var(--color-tone-3)" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"></path>
+            </svg></div>
+            <div className="flex flex-1 justify-center items-center ">🇧🇪 WOORDOL 🇧🇪 </div>
+            <div>
+              <svg onClick={() => { setShowStats(true); }} xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                <path fill="var(--color-tone-3)" d="M16,11V3H8v6H2v12h20V11H16z M10,5h4v14h-4V5z M4,11h4v8H4V11z M20,19h-4v-6h4V19z"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div className="flex flex-1 flex-col justify-center items-stretch">
+
             {tries.map((row, tryIdx) => {
-              return (<div key={"row_" + tryIdx} className="flex align-center justify-center max-h-16 gap-4 ">
+              return (<div key={"row_" + tryIdx} className="flex-1 flex items-center justify-center flex-row gap-4 ">
                 {row.map((letter, idx) => {
                   return <Letter key={tryIdx + "_" + (letter.letter ?? " ") + "_" + idx} animation='IDLE' letter={letter} />
                 })}
@@ -346,7 +368,7 @@ const App = () => {
 
 
 
-          {(currentGame.state == "WON" || currentGame.state === "LOST") && <Modal />}
+          {showStats && <Modal showStats={ (show: boolean) => setShowStats(show)} />}
 
           <div className="w-96 absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col gap-1 mt-4">
             {error && <div key={error} className="w-96 p-3 bg-gray-100 font-bold rounded-md">
@@ -362,7 +384,6 @@ const App = () => {
             dispatch(setCurrentWord(currentWord.slice(0, currentWord.length - 1)));
           }} />
         </div>
-
       );
     } else {
       return <div>Loading...</div>
