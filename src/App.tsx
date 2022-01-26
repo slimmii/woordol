@@ -159,18 +159,16 @@ const getTimeForNextWord = () => {
 
 const HelpModal = ({showHelp} : { showHelp : (show: boolean) => void }) => {
   return (
-    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2 transition duration-500 ease-in-out`}>
-      <div className="relative px-4 w-full max-w-2xl h-full md:h-auto">
-        <div className="relative bg-white rounded-lg p-4">
-          <div className="flex justify-between items-start p-5 rounded-t">
-            <h3 className="text-xl font-semibold text-gray-900 lg:text-2xl ">
-            </h3>
+    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2 transition duration-500 ease-in-out shadow-xm`}>
+      <div className="relative px-4 w-full max-w-2xl h-full md:h-auto overflow-auto">
+        <div className="relative bg-white rounded-lg shadow p-4">
+          
+          <div className="flex flex-row">
+            <p className="mb-2">Raad de <b>WOORDOL</b> in 6 pogingen.</p>
             <button onClick={() => { showHelp(false) }} type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="default-modal">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
             </button>
           </div>
-
-          <p className="mb-2">Raad de <b>WOORDOL</b> in 6 pogingen.</p>
 
           <p className="mb-2">Elke poging moet een bestaand 5 letter woord zijn. Druk op enter om het woord te controleren.</p>
 
@@ -208,6 +206,8 @@ const HelpModal = ({showHelp} : { showHelp : (show: boolean) => void }) => {
           </div>
 
           <p className="mt-2 mb-2">De letter E komt niet in het woord voor.</p>
+        
+          <p className="mt-2">Elke dag zal er een nieuwe WOORDOL beschikbaar zijn! </p>
         </div>
       </div>
     </div>
@@ -270,7 +270,7 @@ ${board}
   }
 
   return (
-    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2 transition duration-500 ease-in-out`}>
+    <div id="default-modal" className={`max-w-lg w-full absolute top-2 left-1/2 transform -translate-x-1/2`}>
       <div className="relative px-4 w-full max-w-2xl h-full md:h-auto">
         <div className="relative bg-white rounded-lg shadow ">
           <div className="flex justify-between items-start p-5 rounded-t border-b ">
@@ -313,9 +313,11 @@ ${board}
                 <div className="flex flex-row m-1">
                   <div className="w-8 font-light text-sm">{k}</div>
                   <div className="flex-1 flex items-center">
-                    <div className="flex p-1 text-white font-bold justify-end bg-blue-600" style={{ fontSize: 10, width: `${v / max * 100}%`, height: "100%" }}>
+                    {v > 0 && <div className="flex p-1 text-white font-bold justify-end bg-blue-600" style={{ fontSize: 10, width: `${v / max * 100}%`, height: "100%" }}>
                       {v}
-                    </div>
+                    </div>}
+
+                    {v == 0 && <div className="text-black font-bold" style={{fontSize: 10}}>{v}</div>}
                   </div>
                 </div>
               );
