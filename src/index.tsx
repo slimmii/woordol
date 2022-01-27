@@ -6,6 +6,11 @@ import { persistor, store } from './store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { PersistGate } from 'redux-persist/lib/integration/react';
+import ReactGA from 'react-ga';
+
+ReactGA.initialize("G-6HQQ50S1HB");
+ReactGA.pageview(window.location.pathname);
+
 
 ReactDOM.render(
   <React.StrictMode>
