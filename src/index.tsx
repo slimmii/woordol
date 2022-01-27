@@ -8,7 +8,7 @@ import * as serviceWorker from './serviceWorker';
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import ReactGA from 'react-ga';
 
-ReactGA.initialize("G-6HQQ50S1HB");
+ReactGA.initialize("UA-54325446-16");
 ReactGA.pageview(window.location.pathname);
 
 
