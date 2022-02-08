@@ -394,6 +394,7 @@ const App = () => {
           }
           // check if key is enter
           if (e.key === "Enter") {
+            console.log("Enter by real keyboard");
             dispatch(checkWord(currentWord, answer));
           }
           // check if key is backspace
@@ -439,6 +440,7 @@ const App = () => {
             </div>}
           </div>
           <Keyboard onEnter={async () => {
+            console.log("Enter by virtual keyboard");
             dispatch(checkWord(currentWord, answer));
           }} onLetter={(letter: string) => {
             dispatch(setCurrentWord(currentWord + letter.toUpperCase()));
