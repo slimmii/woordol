@@ -63,11 +63,11 @@ const Letter = ({ letter }: LetterProps) => {
 
 
 const EnterButton = ({ onClick }: { onClick: () => void }) => {
-  return <button className="w-16 h-12 p-1  bg-gray-400 rounded-md text-white font-bold" onClick={onClick}>ENTER</button>;
+  return <button className="w-16 h-12 p-1  bg-gray-400 rounded-md text-white font-bold" onClick={(e) => { e.currentTarget.blur(); onClick()}}>ENTER</button>;
 }
 
 const DeleteButton = ({ onClick }: { onClick: () => void }) => {
-  return <button className="w-14 h-12 p-1  bg-gray-400 rounded-md text-white font-bold text-xl" onClick={onClick}>⌫</button>;
+  return <button className="w-14 h-12 p-1  bg-gray-400 rounded-md text-white font-bold text-xl" onClick={(e) => { e.currentTarget.blur(); onClick()}}>⌫</button>;
 }
 const KeyboardButton = ({ char, onLetter }: { char: string, onLetter: (letter: string) => void }) => {
   let tries = useSelector((state: RootState) => state.gameState.currentGame?.tries);
@@ -97,7 +97,7 @@ const KeyboardButton = ({ char, onLetter }: { char: string, onLetter: (letter: s
   if (presentLetters.includes(char)) {
     color = "bg-yellow-400";
   }
-  return <button className={`w-8 h-12 p-1  ${color} rounded-md text-white font-bold`} onClick={() => { onLetter(char) }}>{char}</button>;
+  return <button className={`w-8 h-12 p-1  ${color} rounded-md text-white font-bold`} onClick={(e) => { e.currentTarget.blur(); onLetter(char) }}>{char}</button>;
 }
 
 const Keyboard = ({ onEnter, onLetter, onDelete }: { onEnter: () => void, onLetter: (letter: string) => void, onDelete: () => void }) => {
@@ -386,6 +386,10 @@ const App = () => {
       return (
         <div className="select-none outline-none container h-full max-h-screen max-w-md mx-auto flex justify-end flex-col items-stretch" tabIndex={-1} ref={rootRef} onKeyDown={(e) => {
           if (keyboardLocked || currentGame?.state === "WON" || currentGame?.state === "LOST") {
+            return;
+          }
+
+          if (e.ctrlKey || e.altKey || e.metaKey) {
             return;
           }
           // check if key is letter
