@@ -248,11 +248,13 @@ export const evaluateWord = (word: string, answer: string) => {
 console.log(evaluateWord("GERTA","GEERT"));
 
 export const checkWord = (word: string, answer: string) => async (dispatch: Dispatch) => {
+  console.log("checkWord 1");
   dispatch(setKeyboardLock(true));
 
   let evaluations = evaluateWord(word, answer);
 
   if (word.length == 5 && [...words, ...answers].map((word) => word.toUpperCase()).includes(word.toUpperCase())) {
+    console.log("Checking word " + word);
     for (let i = 0; i < 5; i++) {
       dispatch(updateLetterAnimation({ index: i, animation: "flipin" }));
       await new Promise(resolve => setTimeout(resolve, 150));
@@ -262,6 +264,7 @@ export const checkWord = (word: string, answer: string) => async (dispatch: Disp
     }
     dispatch(checkIfWonAndIncrease());
   } else {
+    console.log("Hier is iets fout gegaan");
     for (let i = 0; i < 5; i++) {
       dispatch(updateLetterAnimation({ index: i, animation: "shake" }));
     }
