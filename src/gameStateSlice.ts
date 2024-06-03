@@ -113,6 +113,9 @@ export const gameStateSlice = createSlice({
       if (!state.statistics) {
         state.statistics = initialStatistics;
       }
+
+      console.log(currentGameIndex);
+      console.log("Words left in the list: " + (answers.length - currentGameIndex));
       if (!state.currentGame || state.currentGame.day < currentGameIndex) {
         state.currentGame = {
           currentTry: 0,
